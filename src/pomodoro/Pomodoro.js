@@ -2,6 +2,8 @@ import React, { useState, useEffect } from "react";
 import classNames from "../utils/class-names";
 import useInterval from "../utils/useInterval";
 import { minutesToDuration, secondsToDuration } from '../utils/duration'
+import TimerInfo from './TimerInfo.js'
+import ProgressBar from './ProgressBar.js'
 
 // These functions are defined outside of the component to insure they do not have access to state
 // and are, therefore more likely to be pure.
@@ -11,7 +13,7 @@ import { minutesToDuration, secondsToDuration } from '../utils/duration'
  * @param prevState
  *  the previous session state
  * @returns
- *  new session state with timing information updated.
+ *  new session state with timing information updqated.
  */
 function nextTick(prevState) {
   const timeRemaining = Math.max(0, prevState.timeRemaining - 1);
@@ -110,30 +112,9 @@ function Pomodoro() {
   }
 
 
-    const [percent, setPercent] =useState('100%')
-    useEffect(() =>{
-      if(session!==null){
-      let current = session?.timeRemaining
-      let total = session.label === 'Focusing'? focusDuration*60:breakDuration*60
-      setPercent( String((1-(current/total))*100))
-      }}
-    , [session])
+
   
-  function TimerInfo(){
-    if(session){
-    return(
-  <div className="row mb-2">
-  <div className="col">
-    {/* TODO: Update message below to include current session (Focusing or On Break) total duration */}
-    <h2 data-testid="session-title">
-      {session?.label} for {session?.label==="Focusing" ? minutesToDuration(focusDuration) : minutesToDuration(breakDuration)} minutes
-    </h2>
-    {/* TODO: Update message below correctly format the time remaining in the current session */}
-    <p className="lead" data-testid="session-sub-title">
-      {secondsToDuration(session?.label==null ? 0 : session?.timeRemaining)} remaining
-    </p>
-  </div>
-</div>)}else{return null}}
+
     
   return (
     <div className="pomodoro">
@@ -240,21 +221,8 @@ function Pomodoro() {
       </div>
       <div>
         {/* TODO: This area should show only when there is an active focus or break - i.e. the session is running or is paused */}
-        <TimerInfo /> 
-        <div className="row mb-2">
-          <div className="col">
-            <div className="progress" style={{ height: "20px" }}>
-              <div
-                className={isTimerRunning? 'progress-bar': 'progress-bar-striped progress-bar-animated'}
-                role="progressbar"
-                aria-valuemin="0"
-                aria-valuemax="100"
-                aria-valuenow={percent} // TODO: Increase aria-valuenow as elapsed time increases
-                style={{ width: `${percent}%` }} // TODO: Increase width % as elapsed time increases
-              />
-            </div>
-          </div>
-        </div>
+        <TimerInfo session={session} focusDuration={focusDuration} breakDuration={breakDuration} /> 
+        <ProgressBar session={session} focusDuration={focusDuration} breakDuration={breakDuration} /> 
       </div>
     </div>
   );
